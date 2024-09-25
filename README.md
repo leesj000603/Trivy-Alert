@@ -41,14 +41,15 @@ sudo apt-get install trivy
 - **Slack에서 원하는 채널로 이동한다.**
     앱 추가하기에서 Incoming Webhooks를 검색하여 설치한다.
     ![image](https://github.com/user-attachments/assets/bc48e369-f499-4a32-95e8-48fe58f2eb69)
+  <br>
 
 - **Webhook URL을 생성하고 저장한다.**
     ![image](https://github.com/user-attachments/assets/125ce9c1-4a33-42e8-97df-97164d9ad27f)
+    <br>
     채널 추가 후 앱 생성
     ![image](https://github.com/user-attachments/assets/14e9360a-44ec-47fa-857b-8d328c84f97f)
-    
     이후 수신 웹후크 통합 앱 추가를 누르면 URL이 생성된다.
-
+    <br>
 ### 2. 사용하고 있는 docker image들의 보안 취약점 분석과 Slack 알림메세지 구현
 
 - **jq 설치**
@@ -62,7 +63,7 @@ sudo apt-get install -y jq
 - **존재하는 Docker image들**
   <br>
 ![image](https://github.com/user-attachments/assets/7bb946fc-a51d-4683-a65e-4ffee4987593)
-
+<br>
 
 
   **Trivy를 실행하고, 결과를 Slack으로 전송한다.**
@@ -126,13 +127,13 @@ done
 
 테스트를 위해 1분마다 실행하도록 cron 설정 후 결과 확인.
 ![image](https://github.com/user-attachments/assets/142a6db5-1d52-4ebe-ab3d-a74ffefdb02c)
-
+<br>
 ![image](https://github.com/user-attachments/assets/76e4a102-9f2b-4b11-b7dd-71d342ad1c0f)
-
+<br>
 ![image](https://github.com/user-attachments/assets/41b3b4a4-5a42-4251-b833-e5b0181b300c)
-
+<br>
 ![image](https://github.com/user-attachments/assets/bb1e9cac-1455-426f-b464-09b0955a6ef8)
-
+<br>
 ![image](https://github.com/user-attachments/assets/4a8c832b-86da-4f61-bb60-c36a1eb0e537)
 
 
