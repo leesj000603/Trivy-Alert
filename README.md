@@ -1,22 +1,22 @@
-# Trivy-Image-Scan-Examples
+# Trivy-Image-Scan-Examples 🚀
 Trivy를 사용한 컨테이너 이미지의 정적 분석
 
 
-## 이미지 스캔의 필요성
+## 이미지 스캔의 필요성 🔍
 컨테이너 보안은 기술 산업이 점점 더 빠른 속도로 컨테이너로 이동함에 따라 요즘 사이버 보안의 중요한 측면 중 하나가 되고 있다.
 - 컨테이너 이미지는 기본 이미지에서 파생되고, 기본 이미지 내에는 취약할 수 있는 많은 요소가 있다.
 - 따라서 개발자가 통제할 수 없는 부분이 많기 때문에 이미지를 스캔해야 할 필요성이 생긴다.
 
-## Trivy
+## Trivy 🛡️
 Aquasecurity Trivy는 이 모든 것을 도와주는 도구이다.
 컨테이너 이미지, 파일 시스템 및 Git저장소를 스캔하여 Iac, Kubernetes 매니패스트 및 Dockerfile내의 취약점과 잘못된 구성을 찾아낼 수 있다.
 많은 컨테이너 취약점 스캐너가 있지만 Trivy를 사용해 보갰다.
 trivy만 설치하면 바로 시작할 수 있다.
 
-## 실습
+## 실습 🛠️
 Trivy 스캔 결과를 Slack으로 자동 알림
 
-### 0. Trivy 다운로드
+### 0. Trivy 다운로드 📥
 
 ```
 # 외부 패키지를 설치 하기 위해 필요한 도구 설치
@@ -35,7 +35,7 @@ sudo apt-get update
 sudo apt-get install trivy
 ```
 
-### 1. 환경 준비
+### 1. 환경 준비 🛠️
 - **Slack Webhook을 설정해야 한다.**
 
 - **Slack에서 원하는 채널로 이동한다.**
@@ -49,7 +49,7 @@ sudo apt-get install trivy
     
     이후 수신 웹후크 통합 앱 추가를 누르면 URL이 생성된다.
 
-### 2. Dockerfile 및 Node.js 애플리케이션 작성
+### 2. 사용하고 있는 docker image들의 보안 취약점 분석과 Slack 알림메세지 구현
 
 - **jq 설치**
   - JSON 데이터 파싱: Trivy가 도커 이미지를 검사한 결과를 JSON 형식으로 출력한다. jq는 이 JSON 데이터를 쉽게 필터링하고 변환할 수 있는 강력한 도구입니다.
@@ -122,7 +122,7 @@ done
 ```
 
 
-## 결과
+## 결과 📊
 
 테스트를 위해 1분마다 실행하도록 cron 설정 후 결과 확인.
 ![image](https://github.com/user-attachments/assets/142a6db5-1d52-4ebe-ab3d-a74ffefdb02c)
@@ -137,3 +137,6 @@ done
 
 
 
+## 최종 정리 ✨
+- Trivy를 사용하여 컨테이너 이미지를 스캔하고, 발견된 취약점을 Slack으로 자동으로 알림으로써 보안을 강화할 수 있다.
+- 실습을 통해 다양한 도커 이미지를 대상으로 스캔을 진행하고, 결과를 효율적으로 관리할 수 있는 방법을 배웠다.
