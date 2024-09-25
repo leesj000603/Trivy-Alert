@@ -36,7 +36,7 @@ sudo apt-get install trivy
 ```
 
 ### 1. 환경 준비
-먼저, Slack Webhook을 설정해야 한다.
+- **먼저, Slack Webhook을 설정해야 한다.**
 
 - **Slack에서 원하는 채널로 이동한다.**
     앱 추가하기에서 Incoming Webhooks를 검색하여 설치한다.
@@ -55,135 +55,31 @@ sudo apt-get install trivy
 sudo apt-get install -y jq
 ```
 
-Dockerfile을 사용해 Node.js 애플리케이션을 만든다. 이 애플리케이션은 Trivy를 실행하고, 결과를 Slack으로 전송한다.
-
-- **Dockerfile**
-```
-# Dockerfile
-FROM node:14
-
-# 작업 디렉토리 설정
-WORKDIR /usr/src/app
-
-# 종속성 파일 복사 및 설치
-COPY package*.json ./
-RUN npm install
-
-# 애플리케이션 파일 복사
-COPY . .
-
-# Cron 패키지 설치
-RUN apt-get update && apt-get install -y cron
-
-# Cronjob 추가
-COPY crontab /etc/cron.d/trivy-cron
-
-# Cronjob 권한 설정
-RUN chmod 0644 /etc/cron.d/trivy-cron
-
-# Cron 서비스 시작
-CMD ["cron", "-f"]
-
-```
-
-- **pakage.json 파일**
-```
-{
-    "name": "trivy-slack-alert",
-    "version": "1.0.0",
-    "main": "trivyNotifier.js",  
-    "scripts": {
-      "start": "node trivyNotifier.js" 
-    },
-    "dependencies": {
-      "axios": "^0.21.1"
-    }
-}
-```
-
-- **TrivyAlert.js 파일**
-```
-const { exec } = require('child_process');
-const axios = require('axios');
-
-const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'; // Slack Webhook URL 입력
-
-// 실행 중인 Docker 컨테이너의 이름을 가져오는 함수
-function getRunningContainers(callback) {
-  exec('docker ps --format "{{.Names}}"', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error fetching running containers: ${error}`);
-      return callback(error, null);
-    }
-    const containers = stdout.trim().split('\n');
-    callback(null, containers);
-  });
-}
-
-// 각 컨테이너에 대해 Trivy를 실행하는 함수
-function scanContainer(containerName) {
-  exec(`trivy image --format json ${containerName}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing Trivy for ${containerName}: ${error}`);
-      return;
-    }
-
-    const result = JSON.parse(stdout);
-    let vulnerabilities = result[0]?.Vulnerabilities || [];
-    let criticalIssues = vulnerabilities.filter(vuln => vuln.Severity === 'CRITICAL');
-
-    if (criticalIssues.length > 0) {
-      const message = `⚠️ Trivy Alert! Critical vulnerabilities found in ${containerName}:\n\n` +
-        criticalIssues.map(issue => `- ${issue.VulnerabilityID} (${issue.Title})`).join('\n');
-
-      axios.post(SLACK_WEBHOOK_URL, { text: message })
-        .then(() => console.log(`Alert sent to Slack for ${containerName}!`))
-        .catch(err => console.error(`Error sending to Slack for ${containerName}:`, err));
-    } else {
-      console.log(`No critical vulnerabilities found in ${containerName}.`);
-    }
-  });
-}
-
-// 실행 중인 컨테이너 가져오기
-getRunningContainers((error, containers) => {
-  if (error) return;
-
-  containers.forEach(container => {
-    scanContainer(container);
-  });
-});
-
-```
-
-- **test용으로 crontab 2분마다 실행**
-```
-# crontab (2분마다 실행)
-*/2 * * * * node /usr/src/app/trivyNotifier.js >> /var/log/trivy.log 2>&1****
-```
-
-
-- **빌드명령**
-```
-docker build -t trivy-slack-alert .
-```
-
-- **실행명령**
-```
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock trivy-slack-alert
-```
+- **존재하는 Docker image들**
+  <br>
+![image](https://github.com/user-attachments/assets/7bb946fc-a51d-4683-a65e-4ffee4987593)
 
 
 
-## 트러블슈팅
+- **Trivy를 실행하고, 결과를 Slack으로 전송한다.**
+- **trivy_scan.sh 파일**
 ```
 #!/bin/bash
 
 # 슬랙 웹훅 URL 설정
-SLACK_WEBHOOK_URL="YOUR_SLACK_WEBHOOK_URL"
+SLACK_WEBHOOK_URL="..."
+
+# 현재 날짜와 시간 가져오기
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
 # 모든 도커 이미지 목록 가져오기
 IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+
+# jq가 설치되어 있는지 확인
+if ! command -v jq &> /dev/null; then
+    echo "jq is not installed. Please install jq to continue."
+    exit 1
+fi
 
 # 각 이미지에 대해 Trivy 검사 수행
 for IMAGE in $IMAGES; do
@@ -193,19 +89,47 @@ for IMAGE in $IMAGES; do
     # critical 취약점만 필터링
     CRITICAL_VULNERABILITIES=$(echo "$RESULT" | jq '[.Results[] | select(.Vulnerabilities[]? | .Severity == "CRITICAL")]')
 
+    # 파일명 설정 (날짜와 시간 포함)
+    FILENAME="critical_vulnerabilities_${IMAGE//:/_}_${TIMESTAMP}.txt"
+
     if [ $(echo "$CRITICAL_VULNERABILITIES" | jq 'length') -gt 0 ]; then
+        # 이미지 이름과 취약점 개수 저장
+        echo "치명적인 보안 취약점이  $IMAGE 이미지 에서 발견되었습니다!" > "$FILENAME"
+        echo "$CRITICAL_VULNERABILITIES" | jq '.[] | .Vulnerabilities[] | {PkgName: .PkgName, InstalledVersion: .InstalledVersion, FixedVersion: .FixedVersion, Severity: .Severity, Title: .Title}' >> "$FILENAME"
+
         # 슬랙 메시지 포맷
-        MESSAGE="Critical Trivy Scan Results for $IMAGE:\n\`\`\`$(echo "$CRITICAL_VULNERABILITIES" | jq .)\`\`\`"
-        
-        # 슬랙으로 결과 전송
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$MESSAGE\"}" $SLACK_WEBHOOK_URL
+        MESSAGE="치명적인 보안 취약점이 *$IMAGE*이미지 에서 발견되었습니다!  \`$FILENAME\` 파일을 확인해주세요!!"
+
+        # 슬랙으로 메시지 전송
+        curl -X POST --data-urlencode "payload={\"text\": \"$MESSAGE\"}" $SLACK_WEBHOOK_URL
     else
-        echo "No critical vulnerabilities found for $IMAGE."
+        echo "$IMAGE 는 안전합니다!"
+        # 빈 파일 생성 (선택적)
+        echo "$IMAGE 는 안전합니다!" > "$FILENAME"
     fi
 done
-```
+
 
 ```
-2024-09-25T15:21:23+09:00       WARN    Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.55/docs/scanner/vulnerability#severity-selection for details.
-trivy_scan.sh: line 22: /usr/bin/curl: Argument list too long
+
+- **test용으로 매일 오전 8시 마다 실행**
 ```
+* * * * * /home/username/trivy_slack_alert/trivy_scan.sh
+```
+
+
+## 결과
+
+테스트를 위해 1분마다 실행하도록 cron 설정 후 결과 확인.
+![image](https://github.com/user-attachments/assets/142a6db5-1d52-4ebe-ab3d-a74ffefdb02c)
+
+![image](https://github.com/user-attachments/assets/76e4a102-9f2b-4b11-b7dd-71d342ad1c0f)
+
+![image](https://github.com/user-attachments/assets/41b3b4a4-5a42-4251-b833-e5b0181b300c)
+
+![image](https://github.com/user-attachments/assets/bb1e9cac-1455-426f-b464-09b0955a6ef8)
+
+![image](https://github.com/user-attachments/assets/4a8c832b-86da-4f61-bb60-c36a1eb0e537)
+
+
+
