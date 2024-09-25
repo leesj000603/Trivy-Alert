@@ -116,7 +116,7 @@ done
 
 ```
 
-- **test용으로 매일 오전 8시 마다 실행**
+- **매일 오전 8시 마다 실행되도록 설정**
 ```
 * * * * * /home/username/trivy_slack_alert/trivy_scan.sh
 ```
