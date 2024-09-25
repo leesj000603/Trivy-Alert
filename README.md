@@ -50,6 +50,11 @@ sudo apt-get install trivy
     이후 수신 웹후크 통합 앱 추가를 누르면 URL이 생성된다.
 
 ### 2. Dockerfile 및 Node.js 애플리케이션 작성
+
+```
+sudo apt-get install -y jq
+```
+
 Dockerfile을 사용해 Node.js 애플리케이션을 만든다. 이 애플리케이션은 Trivy를 실행하고, 결과를 Slack으로 전송한다.
 
 - **Dockerfile**
@@ -161,4 +166,46 @@ getRunningContainers((error, containers) => {
 - **빌드명령**
 ```
 docker build -t trivy-slack-alert .
+```
+
+- **실행명령**
+```
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock trivy-slack-alert
+```
+
+
+
+## 트러블슈팅
+```
+#!/bin/bash
+
+# 슬랙 웹훅 URL 설정
+SLACK_WEBHOOK_URL="YOUR_SLACK_WEBHOOK_URL"
+
+# 모든 도커 이미지 목록 가져오기
+IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+
+# 각 이미지에 대해 Trivy 검사 수행
+for IMAGE in $IMAGES; do
+    # Trivy로 이미지 검사
+    RESULT=$(trivy image --scanners vuln --format json $IMAGE)
+
+    # critical 취약점만 필터링
+    CRITICAL_VULNERABILITIES=$(echo "$RESULT" | jq '[.Results[] | select(.Vulnerabilities[]? | .Severity == "CRITICAL")]')
+
+    if [ $(echo "$CRITICAL_VULNERABILITIES" | jq 'length') -gt 0 ]; then
+        # 슬랙 메시지 포맷
+        MESSAGE="Critical Trivy Scan Results for $IMAGE:\n\`\`\`$(echo "$CRITICAL_VULNERABILITIES" | jq .)\`\`\`"
+        
+        # 슬랙으로 결과 전송
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$MESSAGE\"}" $SLACK_WEBHOOK_URL
+    else
+        echo "No critical vulnerabilities found for $IMAGE."
+    fi
+done
+```
+
+```
+2024-09-25T15:21:23+09:00       WARN    Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.55/docs/scanner/vulnerability#severity-selection for details.
+trivy_scan.sh: line 22: /usr/bin/curl: Argument list too long
 ```
