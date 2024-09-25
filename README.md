@@ -1,3 +1,4 @@
+
 # Trivy-Alert 🚀
 Trivy를 사용한 컨테이너 이미지의 보안 정기 분석 및 알림
 
@@ -132,13 +133,21 @@ done
 
 테스트를 위해 1분마다 실행하도록 cron 설정 후 결과 확인.
 ![image](https://github.com/user-attachments/assets/142a6db5-1d52-4ebe-ab3d-a74ffefdb02c)
+
 <br>
+
 ![image](https://github.com/user-attachments/assets/76e4a102-9f2b-4b11-b7dd-71d342ad1c0f)
+
 <br>
+
 ![image](https://github.com/user-attachments/assets/41b3b4a4-5a42-4251-b833-e5b0181b300c)
+
 <br>
+
 ![image](https://github.com/user-attachments/assets/bb1e9cac-1455-426f-b464-09b0955a6ef8)
+
 <br>
+
 ![image](https://github.com/user-attachments/assets/4a8c832b-86da-4f61-bb60-c36a1eb0e537)
 
 
