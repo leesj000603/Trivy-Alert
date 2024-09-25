@@ -44,7 +44,7 @@ sudo apt-get install trivy
 
 - **Webhook URL을 생성하고 저장한다.**
     ![image](https://github.com/user-attachments/assets/125ce9c1-4a33-42e8-97df-97164d9ad27f)
-    
+    채널 추가 후 앱 생성
     ![image](https://github.com/user-attachments/assets/14e9360a-44ec-47fa-857b-8d328c84f97f)
     
     이후 수신 웹후크 통합 앱 추가를 누르면 URL이 생성된다.
