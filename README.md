@@ -49,6 +49,7 @@ sudo apt-get install trivy
   
     <br>
     채널 추가 후 앱 생성
+    
     ![image](https://github.com/user-attachments/assets/14e9360a-44ec-47fa-857b-8d328c84f97f)
     
     <br>
