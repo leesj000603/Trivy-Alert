@@ -1,5 +1,5 @@
-# Trivy-Image-Scan-Examples 🚀
-Trivy를 사용한 컨테이너 이미지의 정적 분석
+# Trivy-Alert 🚀
+Trivy를 사용한 컨테이너 이미지의 보안 정기 분석 및 알림
 
 
 ## 이미지 스캔의 필요성 🔍
