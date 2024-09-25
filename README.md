@@ -65,7 +65,7 @@ sudo apt-get install -y jq
 
 
 
-- **Trivy를 실행하고, 결과를 Slack으로 전송한다.**
+  **Trivy를 실행하고, 결과를 Slack으로 전송한다.**
 - **trivy_scan.sh 파일**
 ```
 #!/bin/bash
