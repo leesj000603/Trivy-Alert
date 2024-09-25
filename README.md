@@ -36,7 +36,7 @@ sudo apt-get install trivy
 ```
 
 ### 1. 환경 준비
-- **먼저, Slack Webhook을 설정해야 한다.**
+- **Slack Webhook을 설정해야 한다.**
 
 - **Slack에서 원하는 채널로 이동한다.**
     앱 추가하기에서 Incoming Webhooks를 검색하여 설치한다.
