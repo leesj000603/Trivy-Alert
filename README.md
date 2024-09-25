@@ -51,6 +51,10 @@ sudo apt-get install trivy
 
 ### 2. Dockerfile 및 Node.js 애플리케이션 작성
 
+- **jq 설치**
+  - JSON 데이터 파싱: Trivy가 도커 이미지를 검사한 결과를 JSON 형식으로 출력한다. jq는 이 JSON 데이터를 쉽게 필터링하고 변환할 수 있는 강력한 도구입니다.
+  - 취약점 필터링: 스크립트에서는 Trivy의 검사 결과에서 "CRITICAL" 심각도를 가진 취약점만 추출할 때 사용한다.
+    
 ```
 sudo apt-get install -y jq
 ```
