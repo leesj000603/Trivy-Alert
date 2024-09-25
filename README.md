@@ -1,23 +1,36 @@
 
 # Trivy-Alert 🚀
-Trivy를 사용한 컨테이너 이미지의 보안 정기 분석 및 알림
+- Trivy를 사용한 보안 취약점 검사
+- slack webhook을 이용한 알람
+- crontab을 이용한 업무 자동화
 
+매일 오전 8시에 실행중인 컨테이너가 사용중인 image 목록을 가져와 보안 취약점 검사를 진행하고 심각한 보안 취약점이 발견 될 경우 Slack에 알린다. 
+
+<br>
 
 ## 이미지 스캔의 필요성 🔍
 컨테이너 보안은 기술 산업이 점점 더 빠른 속도로 컨테이너로 이동함에 따라 요즘 사이버 보안의 중요한 측면 중 하나가 되고 있다.
 - 컨테이너 이미지는 기본 이미지에서 파생되고, 기본 이미지 내에는 취약할 수 있는 많은 요소가 있다.
 - 따라서 개발자가 통제할 수 없는 부분이 많기 때문에 이미지를 스캔해야 할 필요성이 생긴다.
 
+<br>
+
 ## Trivy 🛡️
 Aquasecurity Trivy는 이 모든 것을 도와주는 도구이다.
 컨테이너 이미지, 파일 시스템 및 Git저장소를 스캔하여 Iac, Kubernetes 매니패스트 및 Dockerfile내의 취약점과 잘못된 구성을 찾아낼 수 있다.
 많은 컨테이너 취약점 스캐너가 있지만 Trivy를 사용해 보갰다.
-trivy만 설치하면 바로 시작할 수 있다.
+trivy만 설치하면 보안 취약점 검사를 바로 시작할 수 있다.
+
+<br>
 
 ## 실습 🛠️
 Trivy 스캔 결과를 Slack으로 자동 알림
 
+<br>
+
 ### 0. Trivy 다운로드 📥
+
+<br>
 
 ```
 # 외부 패키지를 설치 하기 위해 필요한 도구 설치
@@ -35,6 +48,8 @@ sudo apt-get update
 # Trivy 설치
 sudo apt-get install trivy
 ```
+
+<br>
 
 ### 1. 환경 준비 🛠️
 - **Slack Webhook을 설정해야 한다.**
@@ -60,18 +75,21 @@ sudo apt-get install trivy
 ### 2. 사용하고 있는 docker image들의 보안 취약점 분석과 Slack 알림메세지 구현
 
 - **jq 설치**
-  - JSON 데이터 파싱: Trivy가 도커 이미지를 검사한 결과를 JSON 형식으로 출력한다. jq는 이 JSON 데이터를 쉽게 필터링하고 변환할 수 있는 강력한 도구입니다.
+  - JSON 데이터 파싱: Trivy가 도커 이미지를 검사한 결과를 JSON 형식으로 출력한다. jq는 이 JSON 데이터를 쉽게 필터링하고 변환할 수 있는 강력한 도구이다.
   - 취약점 필터링: 스크립트에서는 Trivy의 검사 결과에서 "CRITICAL" 심각도를 가진 취약점만 추출할 때 사용한다.
     
 ```
 sudo apt-get install -y jq
 ```
 
+<br>
+
 - **존재하는 Docker image들**
   <br>
 ![image](https://github.com/user-attachments/assets/7bb946fc-a51d-4683-a65e-4ffee4987593)
 <br>
 
+<br>
 
   **Trivy를 실행하고, 결과를 Slack으로 전송한다.**
 - **trivy_scan.sh 파일**
@@ -120,9 +138,9 @@ for IMAGE in $IMAGES; do
         echo "$IMAGE 는 안전합니다!" > "$FILENAME"
     fi
 done
-
-
 ```
+
+<br>
 
 - **매일 오전 8시 마다 실행되도록 설정**
 ```
@@ -156,3 +174,5 @@ done
 ## 최종 정리 ✨
 - Trivy를 사용하여 컨테이너 이미지를 스캔하고, 발견된 취약점을 Slack으로 자동으로 알림으로써 보안을 강화할 수 있다.
 - 실습을 통해 다양한 도커 이미지를 대상으로 스캔을 진행하고, 결과를 효율적으로 관리할 수 있는 방법을 배웠다.
+- 설정해둔 주기에 보안 취약점 검사하는것을 넘어, 빌드할 시기에 자동으로 검사하는 CI를 구현하고자 한다.
+- docker image 외에 파일 시스템 및 Git저장소등에도 scan을 진행 가능하다.
