@@ -32,7 +32,7 @@ Trivy 스캔 결과를 Slack으로 자동 알림
 
 <br>
 
-```
+```bash
 # 외부 패키지를 설치 하기 위해 필요한 도구 설치
 sudo apt-get install wget apt-transport-https gnupg lsb-release
 
@@ -78,7 +78,7 @@ sudo apt-get install trivy
   - JSON 데이터 파싱: Trivy가 도커 이미지를 검사한 결과를 JSON 형식으로 출력한다. jq는 이 JSON 데이터를 쉽게 필터링하고 변환할 수 있는 강력한 도구이다.
     스크립트에서는 Trivy의 검사 결과에서 "CRITICAL" 심각도를 가진 취약점만 추출할 때 사용한다.
     
-```
+```bash
 sudo apt-get install -y jq
 ```
 
