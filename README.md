@@ -6,7 +6,9 @@
 
 매일 오전 8시에 실행중인 docker image 목록을 가져와 보안 취약점 검사를 진행하고 심각한 보안 취약점이 발견 될 경우 Slack에 알린다. 
 
-<br>
+## 사용 기술 🛠️
+<img src="https://img.shields.io/badge/trivy-1904DA?style=for-the-badge&logo=trivy&logoColor=white"/> <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white"/> <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"/> 
+<br> 
 
 ## 이미지 스캔의 필요성 🔍
 컨테이너 보안은 기술 산업이 점점 더 빠른 속도로 컨테이너로 이동함에 따라 요즘 사이버 보안의 중요한 측면 중 하나가 되고 있다.
